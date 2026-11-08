@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DyonLaw — The Dyonian Legal Code</title>
+<meta name="description" content="DyonLaw: the complete legal code of the Departement-Of-Dyon — constitution, civil code, penal code, procedure, and the ten axiomatic laws. Read it, search it, run it.">
+<style>
+  :root{
+    --ink:#1a1d24; --paper:#faf8f4; --gold:#9a7b2d; --gold-l:#c9a86a;
+    --slate:#3d4451; --line:#e3ddd0; --accent:#7a1f1f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);
+       font-family:Georgia,'Times New Roman',serif;line-height:1.7}
+  .wrap{max-width:960px;margin:0 auto;padding:0 28px}
+
+  /* ---------- masthead ---------- */
+  header{border-bottom:3px double var(--gold);padding:14px 0}
+  .mast{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .org{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--slate)}
+  nav a{color:var(--slate);text-decoration:none;font-size:13px;letter-spacing:.12em;
+        text-transform:uppercase;margin-left:26px}
+  nav a:hover{color:var(--gold)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:88px 0 72px;text-align:center;border-bottom:1px solid var(--line)}
+  .hero .kicker{font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
+  .hero h1{font-size:52px;font-weight:400;letter-spacing:.02em;line-height:1.15}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .hero p{max-width:620px;margin:26px auto 0;font-size:18px;color:var(--slate)}
+  .hero .seal{margin-top:38px;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+
+  /* ---------- sections ---------- */
+  section{padding:72px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:30px;font-weight:400;margin-bottom:8px}
+  h2 .num{color:var(--gold);font-size:15px;letter-spacing:.3em;display:block;margin-bottom:10px}
+  .lede{color:var(--slate);max-width:700px;margin-bottom:36px}
+
+  /* books grid */
+  .books{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+  .book{border:1px solid var(--line);background:#fff;padding:26px 24px;position:relative}
+  .book::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--gold)}
+  .book .rn{font-size:11px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase}
+  .book h3{font-size:20px;margin:10px 0 8px;font-weight:400}
+  .book p{font-size:14px;color:var(--slate)}
+
+  /* laws list */
+  .laws{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 28px}
+  .law{display:flex;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px dotted var(--line)}
+  .law b{color:var(--accent);font-weight:400;min-width:110px}
+  .law span{font-size:14px;color:var(--slate)}
+
+  /* instruments */
+  .instr{columns:2;column-gap:48px;font-size:15px;color:var(--slate)}
+  .instr li{margin-bottom:10px;list-style:none;padding-left:22px;position:relative;break-inside:avoid}
+  .instr li::before{content:"§";position:absolute;left:0;color:var(--gold)}
+
+  /* corpus */
+  .corpus{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{border:1px solid var(--line);background:#fff;padding:8px 16px;font-size:13px;
+        letter-spacing:.06em;color:var(--slate);text-transform:uppercase}
+  .chip small{display:block;color:var(--gold);font-size:10px;letter-spacing:.2em}
+
+  /* downloads */
+  .dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+  .card{border:1px solid var(--line);background:#fff;padding:30px 26px;text-align:center}
+  .card h3{font-size:19px;font-weight:400;margin-bottom:6px}
+  .card .ver{font-size:12px;color:var(--gold);letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px}
+  .card p{font-size:13px;color:var(--slate);margin-bottom:20px;min-height:40px}
+  .btn{display:inline-block;background:var(--ink);color:var(--paper);text-decoration:none;
+       padding:11px 26px;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+  .btn:hover{background:var(--accent)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+  .req{font-size:11px;color:#999;margin-top:14px;letter-spacing:.05em}
+
+  /* formal notice */
+  .notice{background:#fff;border-left:4px solid var(--gold);padding:24px 28px;margin-top:36px}
+  .notice h4{font-size:13px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .notice p{font-size:14px;color:var(--slate)}
+
+  footer{padding:44px 0;text-align:center}
+  footer .org{margin-bottom:8px}
+  footer p{font-size:12px;color:#999;letter-spacing:.08em}
+  footer a{color:var(--slate)}
+
+  @media(max-width:640px){
+    .hero h1{font-size:36px}.instr{columns:1}
+    nav a{margin-left:14px;font-size:11px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap mast">
+    <div class="org">Departement-Of-Dyon</div>
+    <nav>
+      <a href="#code">The Code</a>
+      <a href="#laws">The Laws</a>
+      <a href="#instruments">Instruments</a>
+      <a href="#corpus">Corpus</a>
+      <a href="#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">A Sovereign Legal Order</div>
+    <h1>DyonLaw<br><em>The Dyonian Legal Code</em></h1>
+    <p>The complete, codified body of law of the Departement-Of-Dyon —
+       a written constitution, civil and penal codes, procedure, and ten
+       axiomatic laws, published for public inspection.</p>
+    <div class="seal">✦ Est. MMXXVI ✦</div>
+  </div>
+</div>
+
+<section id="code">
+  <div class="wrap">
+    <h2><span class="num">I.</span>The Code</h2>
+    <p class="lede">DyonLaw is organized into four books, each a complete and
+    self-contained instrument of governance. Together they constitute the
+    supreme law of the polity.</p>
+    <div class="books">
+      <div class="book">
+        <div class="rn">Book I</div>
+        <h3>Constitution</h3>
+        <p>The foundational charter — the source and limit of all lawful authority
+        within the Departement.</p>
+      </div>
+      <div class="book">
+        <div class="rn">Book II</div>
+        <h3>Civil Code</h3>
+        <p>The law of persons, property, obligations, and the ordinary conduct of
+        civil life.</p>
+      </div>
+      <div class="book">
+        <div class="rn">Book III</div>
+        <h3>Penal Code</h3>
+        <p>Offences against the order, and the punishments the law permits the
+        state to impose.</p>
+      </div>
+      <div class="book">
+        <div class="rn">Book IV</div>
+        <h3>Procedure</h3>
+        <p>The manner in which law is made, enforced, amended, and adjudicated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="laws">
+  <div class="wrap">
+    <h2><span class="num">II.</span>The Ten Fundamental Laws</h2>
+    <p class="lede">Seven axiomatic laws stand unamendable at the foundation of
+    the code — remove one and the system collapses. Three supplementary laws
+    guide its daily operation.</p>
+    <div class="laws">
+      <div class="law"><b>I. Causality</b><span><i>Axiomatic.</i> Every effect has a cause; no artifact enters the Code without a recorded origin.</span></div>
+      <div class="law"><b>II. Entropy</b><span><i>Axiomatic.</i> Order requires effort; disorder is the default. Cleanup is a civic duty.</span></div>
+      <div class="law"><b>III. Gravity</b><span><i>Axiomatic.</i> Every grant of authority carries an equal obligation; privilege without duty is void.</span></div>
+      <div class="law"><b>IV. Time</b><span><i>Axiomatic.</i> Time is the only non-renewable resource; the polity acts early and correctly.</span></div>
+      <div class="law"><b>V. Identity</b><span><i>Axiomatic.</i> A polity is defined by what it ships; the unshipped does not exist.</span></div>
+      <div class="law"><b>VI. Code</b><span><i>Axiomatic.</i> Working code is law; where documents and code diverge, code prevails.</span></div>
+      <div class="law"><b>VII. Chaos</b><span><i>Axiomatic.</i> Chaos is order over-applied — judged by outcome, not intent.</span></div>
+      <div class="law"><b>VIII. Motion</b><span><i>Supplementary.</i> Nothing moves without an initial impulse; momentum is kept by the community.</span></div>
+      <div class="law"><b>IX. Focus</b><span><i>Supplementary.</i> Attention is the scarcest currency; review goes to the highest-value work first.</span></div>
+      <div class="law"><b>X. Silence</b><span><i>Supplementary.</i> Silence is golden — but never itself an admission of guilt.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="instruments">
+  <div class="wrap">
+    <h2><span class="num">III.</span>Branches &amp; Instruments of Governance</h2>
+    <p class="lede">Authority is exercised only through codified instruments,
+    administered by three branches.</p>
+    <div class="books" style="margin-bottom:36px">
+      <div class="book"><div class="rn">Branch</div><h3>Legislature</h3><p>The <i>amendments</i> repository — sole power to enact, amend, and repeal articles by contributor supermajority.</p></div>
+      <div class="book"><div class="rn">Branch</div><h3>Executive</h3><p>The <i>enforcement</i> repository — sets enforcement priorities and signs instruments into law.</p></div>
+      <div class="book"><div class="rn">Branch</div><h3>Judiciary</h3><p>Pull-request review — challenged instruments are adjudicated; merged amendments form binding precedent.</p></div>
+    </div>
+    <ul class="instr">
+      <li><b>Amendment</b> — proposed in writing with rationale; requires supermajority of contributors (Art. 5).</li>
+      <li><b>Emergency Amendment</b> — fast-tracked procedure during active entropy events.</li>
+      <li><b>Enforcement Action</b> — filed as an issue in the enforcement repository.</li>
+      <li><b>Appeal</b> — an enforcement issue tagged <i>appeal</i> (Procedure 403).</li>
+      <li><b>Judicial Review</b> — every contributor may challenge an instrument by pull request.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="corpus">
+  <div class="wrap">
+    <h2><span class="num">IV.</span>Reference Corpus</h2>
+    <p class="lede">For comparative and historical study, DyonLaw maintains a
+    corpus of foundational legal texts.</p>
+    <div class="corpus">
+      <div class="chip">U.S. Constitution<small>Founding Document</small></div>
+      <div class="chip">Bill of Rights<small>Founding Document</small></div>
+      <div class="chip">Declaration of Independence<small>Founding Document</small></div>
+      <div class="chip">Articles of Confederation<small>Founding Document</small></div>
+      <div class="chip">United States Code<small>Legal Index</small></div>
+      <div class="chip">Code of Federal Regs.<small>Legal Index</small></div>
+      <div class="chip">State Codes — 50 + DC<small>Legal Index</small></div>
+      <div class="chip">Federal Register<small>Legal Index</small></div>
+      <div class="chip">Supreme Court Archive<small>Legal Index</small></div>
+      <div class="chip">U.S. Treaties<small>Legal Index</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <h2><span class="num">V.</span>The Law, Published</h2>
+    <p class="lede">The complete code ships as native Windows applications —
+    read all seventeen documents, search the full text, and browse at your desk.
+    Both are free and open source.</p>
+    <div class="dl">
+      <div class="card">
+        <h3>DyonLaw for Windows</h3>
+        <div class="ver">Version 2.0.0 — GUI Edition</div>
+        <p>Native desktop application. Document browser, full-text search,
+        and a dedicated reader pane. No dependencies.</p>
+        <a class="btn" href="https://github.com/Departement-Of-Dyon/dyon-law/releases/download/v2.0.0/lawwin.exe">Download lawwin.exe</a>
+        <div class="req">Windows 10/11 · ~270 KB · C++ / Win32</div>
+      </div>
+      <div class="card">
+        <h3>DyonLaw Terminal</h3>
+        <div class="ver">Version 1.0.0 — Console Edition</div>
+        <p>The original terminal law book — browse, search, and page through
+        all seventeen documents from any command prompt.</p>
+        <a class="btn ghost" href="https://github.com/Departement-Of-Dyon/dyon-law/releases/download/v1.0.0/dyonlaw.exe">Download dyonlaw.exe</a>
+        <div class="req">Windows · ~260 KB · C</div>
+      </div>
+    </div>
+    <div class="notice">
+      <h4>On the Nature of This Publication</h4>
+      <p>DyonLaw is a work of the Departement-Of-Dyon and is published for
+      study, reference, and the edification of all who encounter it. It
+      describes a legal order — it does not create binding obligations
+      outside that order. The text is offered in good faith and may be
+      amended as the polity develops.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="org">Departement-Of-Dyon</div>
+    <p>Source &amp; releases:
+      <a href="https://github.com/Departement-Of-Dyon/dyon-law">github.com/Departement-Of-Dyon/dyon-law</a>
+    </p>
+    <p style="margin-top:10px">The Dyonian Legal Code · Published under open license · MMXXVI</p>
+  </div>
+</footer>
+
+</body>
+</html>
