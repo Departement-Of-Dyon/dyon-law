@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wiki Admin — DyonLaw</title>
+<link rel="stylesheet" href="wiki.css">
+</head>
+<body>
+<header><div class="wrap mast">
+  <div class="org">Departement-Of-Dyon</div>
+  <nav><a href="./">← Wiki</a><a href="../">The Code</a></nav>
+</div></header>
+
+<div class="wrap" style="padding:40px 28px 70px">
+  <div class="kicker">Restricted</div>
+  <h1>Wiki <em>Admin</em></h1>
+  <p style="margin-top:10px;font-size:14px">Publish posts straight to the
+  repository through the GitHub API. Your token is stored only in this
+  browser's localStorage and sent only to api.github.com.</p>
+
+  <label>GitHub token (repo scope)</label>
+  <input type="text" id="tok" placeholder="ghp_... or github_pat_..." autocomplete="off">
+  <div style="font-size:12px;color:#888;margin-top:6px">
+    Needs <b>repo</b> (classic) or <b>Contents: Read and write</b> (fine-grained) on
+    Departement-Of-Dyon/dyon-law. Generate at github.com/settings/tokens.
+  </div>
+
+  <h2 style="margin-top:34px">Site configuration</h2>
+  <label>Wiki title</label><input type="text" id="cfgTitle" placeholder="DyonLaw Wiki">
+  <label>Wiki subtitle</label><input type="text" id="cfgSub" placeholder="Public journal of the Departement">
+  <button class="btn" style="margin-top:16px" onclick="saveConfig()">Save configuration</button>
+
+  <h2 style="margin-top:40px">Posts</h2>
+  <div class="plist" id="plist"><p>Loading…</p></div>
+
+  <h2 style="margin-top:40px" id="edithead">New post</h2>
+  <label>Title</label><input type="text" id="ptitle" placeholder="Post title">
+  <label>Slug (url name — auto if blank)</label><input type="text" id="pslug" placeholder="my-post">
+  <label>Excerpt (shown in list)</label><input type="text" id="pexcerpt" placeholder="One-line summary">
+  <label>Body (Markdown)</label><textarea id="pbody" placeholder="# Heading&#10;&#10;Write in Markdown — **bold**, *italic*, `code`, lists, >quotes."></textarea>
+  <div style="margin-top:18px;display:flex;gap:12px">
+    <button class="btn" onclick="publish()">PUBLISH</button>
+    <button class="btn" style="background:#fff;color:var(--ink);border:1px solid var(--ink)" onclick="resetForm()">CLEAR</button>
+  </div>
+  <div class="msg" id="msg"></div>
+</div>
+
+<footer><div class="wrap"><p>Departement-Of-Dyon · Admin console</p></div></footer>
+
+<script>
+const REPO='Departement-Of-Dyon/dyon-law';
+const DIR='docs/wiki';
+const tok=()=>localStorage.getItem('gh_tok')||document.getElementById('tok').value.trim();
+document.getElementById('tok').value=localStorage.getItem('gh_tok')||'';
+document.getElementById('tok').oninput=e=>localStorage.setItem('gh_tok',e.target.value.trim());
+
+const msg=(t,ok)=>{const m=document.getElementById('msg');m.textContent=t;m.className='msg '+(ok?'ok':'err')};
+const api=async(path,opt={})=>{
+  const r=await fetch('https://api.github.com/repos/'+REPO+'/contents/'+path+(opt.ref?'?ref='+opt.ref:''),{
+    method:opt.method||'GET',
+    headers:{'Authorization':'token '+tok(),'Accept':'application/vnd.github+json','Content-Type':'application/json'},
+    body:opt.body?JSON.stringify(opt.body):undefined});
+  if(r.status===404)return null;
+  const j=await r.json();
+  if(!r.ok)throw new Error(j.message||('HTTP '+r.status));
+  return j;
+};
+const b64=s=>btoa(unescape(encodeURIComponent(s)));
+const unb64=s=>decodeURIComponent(escape(atob(s)));
+const today=()=>new Date().toISOString().slice(0,10);
+const slugify=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||('post-'+Date.now());
+
+async function loadIndex(){
+  const f=await api(DIR+'/posts/index.json');
+  return f?JSON.parse(unb64(f.content)): {posts:[]};
+}
+async function saveIndex(idx){
+  const path=DIR+'/posts/index.json';
+  const old=await api(path);
+  await api(path,{method:'PUT',body:{message:'wiki: update post index',content:b64(JSON.stringify(idx,null,2)),sha:old?old.sha:undefined}});
+}
+
+async function refresh(){
+  const el=document.getElementById('plist');
+  try{
+    const idx=await loadIndex();
+    el.innerHTML='';
+    for(const p of (idx.posts||[]).sort((a,b)=>(b.date||'').localeCompare(a.date||''))){
+      const d=document.createElement('div');
+      d.innerHTML=`<span><b>${p.title}</b> <span style="color:#999">— ${p.slug} · ${p.date||''}</span></span>`;
+      const b=document.createElement('button');b.textContent='EDIT';
+      b.onclick=()=>editPost(p.slug);d.appendChild(b);
+      const del=document.createElement('button');del.textContent='DEL';del.style.marginLeft='8px';
+      del.onclick=()=>delPost(p.slug);d.appendChild(del);
+      el.appendChild(d);
+    }
+    if(!el.children.length)el.innerHTML='<p>No posts.</p>';
+  }catch(e){el.innerHTML='<p style="color:#b71c1c">Load failed: '+e.message+' (token needed for private? repo is public — check connection)</p>';}
+}
+
+async function editPost(slug){
+  const f=await api(DIR+'/posts/'+slug+'.md');
+  if(!f){msg('post file not found',false);return}
+  const body=unb64(f.content);
+  const idx=await loadIndex();
+  const meta=(idx.posts||[]).find(p=>p.slug===slug)||{};
+  document.getElementById('ptitle').value=meta.title||slug;
+  document.getElementById('pslug').value=slug;
+  document.getElementById('pexcerpt').value=meta.excerpt||'';
+  document.getElementById('pbody').value=body;
+  document.getElementById('edithead').textContent='Editing: '+slug;
+  window.scrollTo({top:document.getElementById('ptitle').offsetTop-100,behavior:'smooth'});
+}
+
+async function delPost(slug){
+  if(!confirm('Delete post "'+slug+'"?'))return;
+  try{
+    const f=await api(DIR+'/posts/'+slug+'.md');
+    if(!f)throw new Error('file not found');
+    await api(DIR+'/posts/'+slug+'.md,{method:'DELETE',body:{message:'wiki: delete '+slug,sha:f.sha}});
+    const idx=await loadIndex();
+    idx.posts=(idx.posts||[]).filter(p=>p.slug!==slug);
+    await saveIndex(idx);
+    msg('deleted '+slug,true);resetForm();refresh();
+  }catch(e){msg('delete failed: '+e.message,false)}
+}
+
+async function publish(){
+  try{
+    const title=document.getElementById('ptitle').value.trim();
+    if(!title){msg('title required',false);return}
+    const slug=document.getElementById('pslug').value.trim()||slugify(title);
+    const excerpt=document.getElementById('pexcerpt').value.trim();
+    let body=document.getElementById('pbody').value;
+    if(!body.trim()){msg('body required',false);return}
+    if(!body.startsWith('#'))body='# '+title+'\n\n'+body;
+
+    const path=DIR+'/posts/'+slug+'.md';
+    const old=await api(path);
+    await api(path,{method:'PUT',body:{
+      message:(old?'wiki: edit ':'wiki: new ')+slug,
+      content:b64(body),sha:old?old.sha:undefined}});
+
+    const idx=await loadIndex();
+    idx.posts=idx.posts||[];
+    const ex={slug,title,date:today(),excerpt};
+    const i=idx.posts.findIndex(p=>p.slug===slug);
+    if(i>=0)idx.posts[i]=ex;else idx.posts.unshift(ex);
+    await saveIndex(idx);
+
+    msg('published "'+title+'" → https://departement-of-dyon.github.io/dyon-law/wiki/post.html?slug='+slug,true);
+    resetForm();refresh();
+  }catch(e){msg('publish failed: '+e.message+' — check token + repo permissions',false)}
+}
+
+async function saveConfig(){
+  try{
+    const cfg={title:document.getElementById('cfgTitle').value.trim()||'DyonLaw Wiki',
+              subtitle:document.getElementById('cfgSub').value.trim()||'Public journal of the Departement'};
+    const path=DIR+'/config.json';
+    const old=await api(path);
+    await api(path,{method:'PUT',body:{message:'wiki: update config',content:b64(JSON.stringify(cfg,null,2)),sha:old?old.sha:undefined}});
+    msg('configuration saved',true);
+  }catch(e){msg('config save failed: '+e.message,false)}
+}
+async function loadConfig(){
+  const f=await api(DIR+'/config.json');
+  if(f){const c=JSON.parse(unb64(f.content));
+    document.getElementById('cfgTitle').value=c.title||'';
+    document.getElementById('cfgSub').value=c.subtitle||'';}
+}
+function resetForm(){
+  ['ptitle','pslug','pexcerpt','pbody'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('edithead').textContent='New post';
+  document.getElementById('msg').className='msg';
+}
+refresh();loadConfig();
+</script>
+</body></html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DyonLaw Wiki — The Dyonian Legal Code</title>
+<link rel="stylesheet" href="wiki.css">
+</head>
+<body>
+<header><div class="wrap mast">
+  <div class="org">Departement-Of-Dyon</div>
+  <nav><a href="../">← The Code</a><a href="admin.html">Admin</a></nav>
+</div></header>
+
+<div class="wrap" style="padding:56px 28px">
+  <div class="kicker">Public Journal</div>
+  <h1 id="wikititle">DyonLaw <em>Wiki</em></h1>
+  <p id="wikisub" style="margin-top:14px">Commentary, notices, and notes on the Dyonian
+  Legal Code — maintained by the Departement and published openly.</p>
+  <div class="postlist" id="posts"><p>Loading…</p></div>
+</div>
+
+<footer><div class="wrap">
+  <p>Departement-Of-Dyon · <a href="https://github.com/Departement-Of-Dyon/dyon-law">Source</a></p>
+</div></footer>
+
+<script>
+const BASE='https://raw.githubusercontent.com/Departement-Of-Dyon/dyon-law/main/docs/wiki/';
+const RAW=BASE+'posts/';
+(async()=>{
+  try{
+    const cfg=await fetch(BASE+'config.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null);
+    if(cfg){
+      if(cfg.title)document.getElementById('wikititle').innerHTML=cfg.title.replace(/</g,'&lt;');
+      if(cfg.subtitle)document.getElementById('wikisub').textContent=cfg.subtitle;
+      document.title=(cfg.title||'DyonLaw Wiki')+' — DyonLaw';
+    }
+  }catch(e){}
+  try{
+    const idx=await (await fetch(RAW+'index.json?'+Date.now())).json();
+    const el=document.getElementById('posts');el.innerHTML='';
+    for(const p of idx.posts||[]){
+      const a=document.createElement('a');a.className='post';a.href='post.html?slug='+encodeURIComponent(p.slug);
+      a.innerHTML=`<div class="d">${p.date||''}</div><h3>${p.title}</h3><p>${p.excerpt||''}</p>`;
+      el.appendChild(a);
+    }
+    if(!el.children.length)el.innerHTML='<p>No posts yet.</p>';
+  }catch(e){document.getElementById('posts').innerHTML='<p>Could not load posts.</p>';}
+})();
+</script>
+</body></html>

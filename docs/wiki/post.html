@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Post — DyonLaw Wiki</title>
+<link rel="stylesheet" href="wiki.css">
+</head>
+<body>
+<header><div class="wrap mast">
+  <div class="org">Departement-Of-Dyon</div>
+  <nav><a href="./">← Wiki</a><a href="../">The Code</a></nav>
+</div></header>
+
+<div class="wrap" style="padding:56px 28px">
+  <div id="post"><p>Loading…</p></div>
+</div>
+
+<footer><div class="wrap">
+  <p>Departement-Of-Dyon · <a href="https://github.com/Departement-Of-Dyon/dyon-law">Source</a></p>
+</div></footer>
+
+<script src="md.js"></script>
+<script>
+const RAW='https://raw.githubusercontent.com/Departement-Of-Dyon/dyon-law/main/docs/wiki/posts/';
+const slug=new URLSearchParams(location.search).get('slug')||'welcome';
+(async()=>{
+  const el=document.getElementById('post');
+  try{
+    const [body,idx]=await Promise.all([
+      fetch(RAW+encodeURIComponent(slug)+'.md?'+Date.now()).then(r=>{if(!r.ok)throw 0;return r.text()}),
+      fetch(RAW+'index.json?'+Date.now()).then(r=>r.json()).catch(()=>({posts:[]}))
+    ]);
+    const meta=(idx.posts||[]).find(p=>p.slug===slug)||{};
+    const title=(body.match(/^#\s+(.*)/m)||[,slug])[1];
+    document.title=title+' — DyonLaw Wiki';
+    el.innerHTML=`<div class="kicker">${meta.date||''}</div><h1>${title}</h1>
+      <div style="margin-top:24px">${md(body.replace(/^#.*$/m,''))}</div>`;
+  }catch(e){el.innerHTML='<h1>Not found</h1><p>No post with that slug.</p>';}
+})();
+</script>
+</body></html>
