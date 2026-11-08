@@ -1,7 +1,16 @@
 # DyonLaw
 
-The official terminal law book of the **Departement-Of-Dyon** polity —
-the complete Dyonian Legal Code in a single C program.
+The official law book of the **Departement-Of-Dyon** polity —
+the complete Dyonian Legal Code.
+
+## Editions
+
+- **`lawwin.exe`** — native Win32 GUI (recommended): document list,
+  reader pane, search box, status bar. C++ source: `lawwin.cpp`
+- **`dyonlaw.exe`** — terminal version with pager + `/search`. C source:
+  `dyonlaw.c`
+
+Both share the same embedded legal texts (`lawtexts.h`).
 
 ## What it contains
 
@@ -15,23 +24,15 @@ the complete Dyonian Legal Code in a single C program.
 - **Governance instruments** and the **government-law reference corpus**
   (U.S. founding documents, U.S. Code, CFR, state codes, treaties)
 
-## Usage
-
-```
-dyonlaw.exe
-```
-
-- Type a document number to open it (space = next page, `q` = back)
-- `/keyword` to search all documents case-insensitively
-- `q` to quit
-
 ## Build
 
 ```bash
+# GUI (Windows, zero dependencies)
+g++ -O2 -mwindows -o lawwin.exe lawwin.cpp
+
+# Terminal
 gcc -O2 -o dyonlaw dyonlaw.c
 ```
-
-Windows binary (`dyonlaw.exe`) is attached to the latest release.
 
 ## Canonical sources
 
