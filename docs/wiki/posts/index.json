@@ -1,1 +1,15 @@
-{"posts":[{"slug":"welcome","title":"Welcome to the DyonLaw Wiki","date":"2026-11-08"}]}
+{
+  "posts": [
+    {
+      "slug": "the-code-goes-public",
+      "title": "The Code Goes Public",
+      "date": "2026-11-09",
+      "excerpt": "The Departement is pleased to announce that the Dyonian Legal Code is now published for public inspection."
+    },
+    {
+      "slug": "welcome",
+      "title": "Welcome to the DyonLaw Wiki",
+      "date": "2026-11-08"
+    }
+  ]
+}
