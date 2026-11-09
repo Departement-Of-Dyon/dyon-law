@@ -14,71 +14,41 @@
 <div class="wrap" style="padding:48px 28px 70px">
   <div class="kicker">Community</div>
   <h1>Write a <em>Post</em></h1>
-  <p style="margin-top:12px;font-size:14px">Anyone may contribute. Submissions
-  are reviewed by the Departement and published to the wiki — usually within a
-  few minutes.</p>
+  <p style="margin-top:12px;font-size:14px">Anyone may contribute. Posting opens a
+  GitHub issue — a bot publishes it to the wiki within a minute and closes the
+  issue with the live link. Requires a free GitHub account.</p>
 
-  <div id="form">
+  <div>
     <label>Title</label><input type="text" id="ptitle" placeholder="Post title">
-    <label>Slug (url name — letters, numbers, dashes)</label><input type="text" id="pslug" placeholder="my-post">
-    <label>Excerpt (one line, shown in the post list)</label><input type="text" id="pexcerpt" placeholder="Short summary">
+    <label>Excerpt (one line, shown in the post list — optional, auto if blank)</label><input type="text" id="pexcerpt" placeholder="Short summary">
     <label>Body (Markdown — **bold**, *italic*, `code`, lists, &gt;quotes)</label>
     <textarea id="pbody" placeholder="Write your post here…"></textarea>
     <div style="margin-top:18px">
-      <button class="btn" onclick="submitPost()">SUBMIT FOR REVIEW</button>
+      <button class="btn" onclick="submitPost()">SUBMIT AS GITHUB ISSUE</button>
     </div>
     <div class="msg" id="msg"></div>
   </div>
-
-  <div id="done" style="display:none">
-    <h2>Submitted.</h2>
-    <p>Your post was received and queued for publication. It will appear at:</p>
-    <p><a id="plink" href="#">post link</a></p>
-    <p style="font-size:13px;color:#888">GitHub Pages rebuilds take about a minute.</p>
-  </div>
 </div>
 
-<!-- Apps Script deploy URL — set after deploying apps-script/Code.gs -->
+<footer><div class="wrap"><p>Departement-Of-Dyon · Community submissions</p></div></footer>
+
 <script>
-const GAS_URL='PASTE_DEPLOYED_APPS_SCRIPT_URL_HERE';
-const RAW='https://raw.githubusercontent.com/Departement-Of-Dyon/dyon-law/main/docs/wiki/posts/';
-const msg=(t,ok)=>{const m=document.getElementById('msg');m.textContent=t;m.className='msg '+(ok?'ok':'err')};
-
+const ISSUE_URL='https://github.com/Departement-Of-Dyon/dyon-law/issues/new';
 function submitPost(){
-  if(GAS_URL.indexOf('PASTE_')===0){msg('Submissions are not configured yet — check back soon.',false);return}
   const title=document.getElementById('ptitle').value.trim();
-  const slug=(document.getElementById('pslug').value.trim()||title).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  let body=document.getElementById('pbody').value.trim();
   const excerpt=document.getElementById('pexcerpt').value.trim();
-  const body=document.getElementById('pbody').value.trim();
-  if(!title||!slug||!body){msg('title, slug and body are required',false);return}
-  msg('Submitting…',true);
-
-  // Apps Script web apps don't support CORS reads — post via hidden iframe,
-  // then confirm by polling the public index.json until the slug appears.
-  const f=document.createElement('iframe');f.style.display='none';document.body.appendChild(f);
-  const form=document.createElement('form');
-  form.method='POST';form.action=GAS_URL;form.target=f.name='gasframe';
-  [['title',title],['slug',slug],['excerpt',excerpt],['body',body]].forEach(([k,v])=>{
-    const i=document.createElement('input');i.type='hidden';i.name=k;i.value=v;form.appendChild(i);
-  });
-  document.body.appendChild(form);form.submit();
-
-  let tries=0;
-  const poll=setInterval(async()=>{
-    tries++;
-    try{
-      const idx=await (await fetch(RAW+'index.json?'+Date.now())).json();
-      if((idx.posts||[]).some(p=>p.slug===slug)){
-        clearInterval(poll);
-        document.getElementById('form').style.display='none';
-        const done=document.getElementById('done');done.style.display='block';
-        const link='post.html?slug='+slug;
-        document.getElementById('plink').href=link;
-        document.getElementById('plink').textContent=location.origin+location.pathname.replace('submit.html','')+link;
-      }
-    }catch(e){}
-    if(tries>60){clearInterval(poll);msg('Submitted — publication may take a few minutes. Check the wiki shortly.',true)}
-  },5000);
+  if(!title||!body){
+    const m=document.getElementById('msg');m.textContent='title and body are required';m.className='msg err';return;
+  }
+  if(excerpt)body='> '+excerpt+'\n\n'+body;
+  const url=ISSUE_URL+'?'+new URLSearchParams({
+    title:title, body:body, labels:'wiki-post'
+  }).toString();
+  window.open(url,'_blank');
+  const m=document.getElementById('msg');
+  m.textContent='Opened the issue form in a new tab — submit it there and the wiki publishes automatically.';
+  m.className='msg ok';
 }
 </script>
 </body></html>
